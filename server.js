@@ -11,13 +11,27 @@ let tweets = [
   },
 ];
 
+let users = [
+  {
+    id: "1",
+    firstName: "lee",
+    lastName: "jinhee",
+  },
+  {
+    id: "2",
+    firstName: "park",
+    lastName: "suman",
+  },
+];
+
 // gql``는 graphql의 schema definition language
 const typeDefs = gql`
   type User {
     id: ID!
-    username: String!
     firstName: String!
     lastName: String!
+    fullName: String!
+    test: String!
   }
 
   type Tweet {
@@ -27,6 +41,7 @@ const typeDefs = gql`
   }
 
   type Query {
+    allUsers: [User!]!
     allTweets: [Tweet!]!
     tweet(id: ID!): Tweet
   }
@@ -60,6 +75,10 @@ const resolvers = {
     tweet(root, { id }) {
       return tweets.find((tweet) => tweet.id === id);
     },
+    allUsers() {
+      // fullName이 없다는 걸 인지
+      return users;
+    },
   },
   // 만약 database를 mutate한다면 Mutation에 써줘야함.
   Mutation: {
@@ -79,6 +98,16 @@ const resolvers = {
       tweets = tweets.filter((tweet) => tweet.id !== id);
       return true;
     },
+  },
+  User: {
+    // fullName의 resolver function이 호출되어 result data를 만들어 냄
+    fullName({ firstName, lastName }) {
+      return `${firstName} ${lastName}`;
+    },
+    // typeDefs > User 안에 키값과 동일하게 만들어주면 자동으로 호출을 해주나보다..
+    test() {
+      return 'rrrrrrrrr'
+    }
   },
 };
 
